@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма для працівників</title>
+    <!-- Підключення Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body class="p-4">
+
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-lg transition-all duration-300 hover:shadow-2xl">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Аварійні ситуації</h1>
+        <p class="text-center text-gray-500 mb-8">Будь ласка, заповніть усі поля форми.</p>
+
+        <form id="employeeForm" class="space-y-6">
+            <div>
+                <label for="fullName" class="block text-sm font-medium text-gray-700 mb-1">ПІБ</label>
+                <input type="text" id="fullName" name="ПІБ" class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" placeholder="Введіть ваше повне ім'я" required>
+            </div>
+
+            <div>
+                <label for="division" class="block text-sm font-medium text-gray-700 mb-1">Дільниця</label>
+                <select id="division" name="Дільниця" class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required>
+                    <option value="" disabled selected>Оберіть дільницю</option>
+                    <option value="Склад виробництва">Склад виробництва</option>
+                    <option value="Склад зберігання">Склад зберігання</option>
+                    <option value="SMT">SMT</option>
+                    <option value="DIP">DIP</option>
+                    <option value="Дільниця нанесення вологозахисту">Дільниця нанесення вологозахисту</option>
+                    <option value="Дільниця селективного монтажу">Дільниця селективного монтажу</option>
+                    <option value="Дільниця тамподруку">Дільниця тамподруку</option>
+                    <option value="Дільниця тестування (HT)">Дільниця тестування (HT)</option>
+                     <option value="Дільниця складання">Дільниця складання</option>
+                    <option value="Дільниця контролю якості (QC)">Дільниця контролю якості (QC)</option>
+                    <option value="Дільниця Long Test">Дільниця Long Test</option>
+                    <option value="Дільниця ремонту">Дільниця ремонту</option>
+                    <option value="Дільниця пакування/комплектування">Дільниця пакування/комплектування</option>
+                    <option value="Master Box">Master Box</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="response1" class="block text-sm font-medium text-gray-700 mb-1">Відповідь у довільній формі Ситуація 1</label>
+                <textarea id="response1" name="Відповідь 1" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" placeholder="Напишіть вашу відповідь..." required></textarea>
+            </div>
+
+            <div>
+                <label for="response2" class="block text-sm font-medium text-gray-700 mb-1">Відповідь у довільній формі Ситуація 2</label>
+                <textarea id="response2" name="Відповідь 2" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" placeholder="Напишіть вашу відповідь..." required></textarea>
+            </div>
+
+            <button type="submit" id="submitButton" class="w-full bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+                Відправити
+            </button>
+
+            <div id="statusMessage" class="mt-4 text-center text-sm font-medium text-gray-700"></div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('employeeForm');
+            const submitButton = document.getElementById('submitButton');
+            const statusMessage = document.getElementById('statusMessage');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault(); // Запобігаємо стандартній відправці форми
+
+                submitButton.disabled = true;
+                submitButton.textContent = 'Відправка...';
+                statusMessage.textContent = '';
+
+                // Отримуємо дані з форми
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+
+                // URL вашого розгорнутого Google Apps Script
+                // !!! ВСТАВТЕ СЮДИ ВАШ URL СКРИПТУ !!!
+                const scriptUrl = 'https://script.google.com/macros/s/AKfycbzjOkkn8Vnbpv4tCxECyfd6p5lIs9MCYMsdmfinau0Goh5Vfxuh7Qy-p2kaGmUHF-L_/exec';
+
+                try {
+                    const response = await fetch(scriptUrl, {
+                        method: 'POST',
+                        mode: 'no-cors', // Потрібно для обходу CORS
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    // У режимі 'no-cors' неможливо прочитати відповідь,
+                    // тому просто вважаємо, що запит був успішним
+                    statusMessage.textContent = 'Форма успішно відправлена!';
+                    statusMessage.className = 'mt-4 text-center text-sm font-medium text-green-600';
+                    form.reset(); // Очищаємо форму
+                } catch (error) {
+                    console.error('Помилка відправки:', error);
+                    statusMessage.textContent = 'Сталася помилка при відправці. Спробуйте ще раз.';
+                    statusMessage.className = 'mt-4 text-center text-sm font-medium text-red-600';
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Відправити';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
